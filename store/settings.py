@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-t4))))z3_rwvd68lo!38i@&6**rv2jp3!**@@ee6&8qhk(wqza
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [https://store-shop-vaev.onrender.com]
 
 
 # Application definition
