@@ -13,7 +13,6 @@ Users can browse products, add items to cart, and place orders.
 - Python
 - Django
 - HTML / CSS
-- Bootstrap
 -Javascript
 
 ## How to Run
