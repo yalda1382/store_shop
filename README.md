@@ -12,8 +12,7 @@ Users can browse products, add items to cart, and place orders.
 - ## Technologies Used
 - Python
 - Django
-- HTML / CSS
-- 
+- HTML / CSS 
 -Javascript
 
 ## How to Run
