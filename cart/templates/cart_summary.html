@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Cart</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Your selected items</p>
+        </div>
+    </div>
+</header>
+
+<!-- ✅ پیام داخلی -->
+<div id="local-message" class="alert alert-success text-center mx-3 mt-3 d-none shadow" role="alert"></div>
+
+<br>
+
+{% if cart_products %}
+    {% for product in cart_products %}
+        <div class="container">
+            <div class="card mb-4 shadow-sm">
+                <div class="row g-0 align-items-center">
+
+                    <!-- IMAGE -->
+                    <div class="col-md-4 text-center">
+                        {% if product.picture %}
+                            <img src="{{ product.picture.url }}" class="img-fluid rounded-start p-3">
+                        {% else %}
+                            <img src="/static/no-image.png" class="img-fluid rounded-start p-3">
+                        {% endif %}
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="col-md-8">
+                        <div class="card-body">
+
+                            <h5 class="card-title fw-bold">{{ product.name }}</h5>
+
+                            {% if product.Is_sale %}
+                                <p class="mb-2">
+                                    <strike class="text-muted">{{ product.price|intcomma }}</strike>
+                                    <span class="text-success fw-bold ms-2">
+                                        {{ product.sale_price|intcomma }}
+                                    </span>
+                                </p>
+                            {% else %}
+                                <p class="fw-bold">{{ product.price|intcomma }}</p>
+                            {% endif %}
+
+                            <!-- QUANTITY -->
+                            <div class="mb-3" style="max-width: 120px;">
+                                <label class="form-label fw-semibold">تعداد</label>
+                                <select class="form-select" id="select{{ product.id }}">
+                                    {% for i in qty_range %}
+                                        <option value="{{ i }}"
+                                            {% for key, value in quintities.items %}
+                                                {% if key == product.id and value == i %}
+                                                    selected
+                                                {% endif %}
+                                            {% endfor %}
+                                        >{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- BUTTONS -->
+                            <div class="d-flex gap-2 mt-3">
+                                <button type="button"
+                                        class="btn btn-primary update-item"
+                                        data-index="{{ product.id }}">
+                                    Update
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-danger delete-item"
+                                        data-index="{{ product.id }}">
+                                    Delete
+                                </button>
+
+                                <a href="{% url 'home' %}" class="btn btn-secondary">
+                                    Back to Home
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+
+    <!-- ✅ اینجا جمع کل و دکمه Payment پایین حلقه قرار گرفت -->
+    <div class="container">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">مجموع کل سفارش</h5>
+                <h5 class="mb-0 text-success fw-bold">
+                    {{ total|intcomma }} تومان
+                </h5>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Payment</a>
+            </div>
+        </div>
+    </div>
+
+{% else %}
+    <h3 class="text-center my-5">No items in the cart.</h3>
+{% endif %}
+
+<br><br>
+
+
+<!-- --------------------- JS --------------------- -->
+<script>
+function showLocalMessage(text, type='success') {
+    let msg = $('#local-message');
+    msg.removeClass('d-none alert-success alert-danger').addClass('alert-' + type).text(text).hide().slideDown();
+    setTimeout(function(){ msg.slideUp(); }, 2500);
+}
+
+// UPDATE
+$(document).on('click', '.update-item', function(e){
+    e.preventDefault();
+    var productid = $(this).data('index');
+    var qty = $('#select' + productid).val();
+
+    $.ajax({
+        type: "POST",
+        url: "{% url 'cart_update' %}",
+        data: {
+            product_id: productid,
+            product_qty: qty,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(){
+            showLocalMessage('سبد خرید با موفقیت به‌روزرسانی شد', 'success');
+        }
+    });
+});
+
+// DELETE
+$(document).on('click', '.delete-item', function(e){
+    e.preventDefault();
+    var productid = $(this).data('index');
+
+    $.ajax({
+        type: "POST",
+        url: "{% url 'cart_delete' %}",
+        data: {
+            product_id: productid,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(){
+            showLocalMessage('محصول از سبد خرید حذف شد', 'danger');
+            setTimeout(function(){ location.reload(); }, 800);
+        }
+    });
+});
+</script>
+
+{% endblock %}

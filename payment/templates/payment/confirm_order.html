@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Confirm Order</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Check your list again</p>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-7">
+
+            <!-- SUMMARY CARD -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Summary
+                </div>
+                <div class="card-body">
+
+                    {% for product in cart_products %}
+                        <p>{{ product.name }}</p>
+
+                        {% if product.Is_sale %}
+                            <p>{{ product.sale_price|intcomma }}</p>
+                        {% else %}
+                            <p class="fw-bold">{{ product.price|intcomma }}</p>
+                        {% endif %}
+
+                        <small>
+                            count:
+                            {% for key, value in quintities.items %}
+                                {% if key == product.id %}
+                                    {{ value }}
+                                {% endif %}
+                            {% endfor %}
+                        </small>
+
+                        <hr>
+                    {% endfor %}
+                    <strong >all counts :{{total | intcomma}} </strong>
+                    <br>
+                  
+
+                </div>
+            </div>
+
+            <!-- SHIPPING INFO CARD -->
+            <div class="card">
+                <div class="card-header">
+                    Shipping Info
+                </div>
+                <div class="card-body">
+                <form method="POST" action="{% url 'process_order'%}"> 
+                    {%csrf_token%}
+                    full_name:{{shipping_info.shipping_full_name}}<br>
+                    email:{{shipping_info.shipping_email}}<br>
+                    adress1:{{shipping_info.shipping_adress}}<br>
+                    adress2:{{shipping_info.shipping_adress1}}<br>
+                    city:{{shipping_info.shipping_city}}<br>
+                    state:{{shipping_info.shipping_state}}<br>
+                    post:{{shipping_info.shipping_post}}<br>
+                    country:{{shipping_info.shipping_country}}<br>
+
+                </div>
+            </div>
+
+            <div class="mt-3 text-center">
+                <button type="submit" class="btn btn-success">Proceed to Pay</button>
+            </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- پیام داخلی -->
+<div id="local-message" class="alert alert-success text-center mx-3 mt-3 d-none shadow" role="alert"></div>
+
+{% endblock %}

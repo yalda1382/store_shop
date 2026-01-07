@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+<!-- Header -->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">جستجو</h1>
+            <p class="lead fw-normal text-white-50 mb-0">چه محصولی را می‌خواهید پیدا کنید؟</p>
+        </div>
+    </div>
+</header>
+
+<br><br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-7">
+            <!-- فرم جستجو -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    جستجو
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'search' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" placeholder="نام یا توضیحات محصول..." name="searched">
+                        <br>
+                        <button class="btn btn-primary" type="submit">جستجو</button>
+                    </form>
+
+                    <!-- پیام زیر فرم -->
+                    {% if message %}
+                        <p class="mt-3 text-center fw-bold text-dark" style="font-size:1.1rem;">
+                            {{ message }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- نتایج جستجو -->
+            {% if searched %}
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                {% for item in searched %}
+                <div class="col mb-5">
+                    <div class="card h-100 shadow-sm">
+                        <!-- تصویر محصول -->
+                        <img class="card-img-top" src="{{ item.picture.url }}" alt="{{ item.name }}" />
+
+                        <!-- جزئیات محصول -->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <h5 class="fw-bolder">{{ item.name }}</h5>
+                                {% if item.Is_sale %}
+                                <div class="product-pricing">
+                                    <span class="text-muted text-decoration-line-through" style="opacity:0.7;">
+                                        {{ item.price|intcomma }} تومان
+                                    </span>
+                                    <span class="fw-bold text-danger">
+                                        {{ item.sale_price|intcomma }} تومان
+                                    </span>
+                                </div>
+                                {% else %}
+                                <span class="fw-bold">
+                                    {{ item.price|intcomma }} تومان
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<br><br>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+<br><br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-10">
+
+            <h3 class="mb-4">Order Details</h3>
+
+            <div class="card shadow">
+                <div class="card-header">
+                    Order #{{ order.id }} —
+                    {{ order.amount_paid|intcomma }} تومان
+                </div>
+
+                <div class="card-body">
+                    <p><strong>Full name:</strong> {{ order.full_name }}</p>
+                    <p><strong>Email:</strong> {{ order.email }}</p>
+                    <p><strong>Address:</strong><br>{{ order.shipping_address|linebreaks }}</p>
+                    <p><strong>Order date:</strong> {{ order.date_ordered }}</p>
+                    <p><strong>Last update:</strong> {{ order.last_update }}</p>
+                    <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+
+                    <hr>
+
+                    <h5>Items</h5>
+                    <ul>
+                        {% for item in items %}
+                            <li>
+                                {{ item.product }} —
+                                count: {{ item.quantity }} —
+                                {{ item.price|intcomma }} تومان
+                            </li>
+                        {% empty %}
+                            <li>No items found.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <a href="{% url 'orders' %}" class="btn btn-primary mt-3">
+                Back to orders
+            </a>
+
+        </div>
+    </div>
+</div>
+
+<br><br>
+
+{% endblock %}

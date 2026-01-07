@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+<br><br>
+
+<!-- ✅ پیام داخلی (دقیقاً مثل cart_summary) -->
+<div id="local-message"
+     class="alert alert-success text-center mx-3 mt-3 d-none shadow"
+     role="alert">
+</div>
+
+<div class="container">
+    <div class="card mb-3 shadow-sm">
+        <div class="row g-0">
+
+            <!-- IMAGE -->
+            <div class="col-md-4 text-center">
+                {% if product.picture %}
+                    <img src="{{ product.picture.url }}" class="img-fluid rounded-start p-3">
+                {% else %}
+                    <img src="/static/no-image.png" class="img-fluid rounded-start p-3">
+                {% endif %}
+            </div>
+
+            <!-- CONTENT -->
+            <div class="col-md-8">
+                <div class="card-body">
+
+                    <h5 class="card-title fw-bold">{{ product.name }}</h5>
+
+                    <p class="card-text">{{ product.description }}</p>
+
+                    {% if product.Is_sale %}
+                        <p>
+                            <strike class="text-muted">{{ product.price|intcomma }}</strike>
+                            <span class="fw-bold text-success ms-2">
+                                {{ product.sale_price|intcomma }}
+                            </span>
+                        </p>
+                    {% else %}
+                        <p class="fw-bold">{{ product.price|intcomma }}</p>
+                    {% endif %}
+
+                    <!-- QUANTITY -->
+                    <div class="mb-3" style="max-width: 120px;">
+                        <label class="form-label fw-semibold">تعداد</label>
+                        <select class="form-select" id="cart_qty">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+
+                    <!-- BUTTONS -->
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="button"
+                                class="btn btn-primary update-cart"
+                                data-index="{{ product.id }}">
+                            Update Quantity
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                id="add-cart"
+                                value="{{ product.id }}">
+                            Add to Cart
+                        </button>
+
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                            Back to Home
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<br><br>
+
+<!-- ---------------- JS ---------------- -->
+
+<script>
+function showLocalMessage(text, type='success') {
+    let msg = $('#local-message');
+    msg.removeClass('d-none alert-success alert-danger')
+       .addClass('alert-' + type)
+       .text(text)
+       .hide()
+       .slideDown();
+
+    setTimeout(function(){
+        msg.slideUp();
+    }, 2500);
+}
+</script>
+
+<script>
+// ADD TO CART
+$(document).on('click', '#add-cart', function(e){
+    e.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "{% url 'cart_add' %}",
+        data: {
+            product_id: $('#add-cart').val(),
+            product_qty: $('#cart_qty').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(){
+            showLocalMessage('محصول به سبد خرید اضافه شد', 'success');
+        }
+    });
+});
+</script>
+
+<script>
+// UPDATE QUANTITY
+$(document).on('click', '.update-cart', function(e){
+    e.preventDefault();
+
+    let productid = $(this).data('index');
+    let qty = $('#cart_qty').val();
+
+    $.ajax({
+        type: "POST",
+        url: "{% url 'cart_update' %}",
+        data: {
+            product_id: productid,
+            product_qty: qty,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(){
+            showLocalMessage('تعداد محصول به‌روزرسانی شد', 'success');
+        }
+    });
+});
+</script>
+
+{% endblock %}
