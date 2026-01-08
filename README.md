@@ -31,7 +31,7 @@ pip install -r requirements.txt
 7. Run server:
 python manage.py runserver
 
-8.localhost:
+  8.localhost:
 http://127.0.0.1:8000/
 
 
