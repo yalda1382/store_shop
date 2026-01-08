@@ -18,7 +18,7 @@ Users can browse products, add items to cart, and place orders.
 ## How to Run
 
 1. Clone the repository:
-git clone https://(https://github.com/yalda1382/store_shop/)
+git clone https:(https://github.com/yalda1382/store_shop/)
 
 2. Create virtual environment and activate it :
 3. python3 -m venv venv
@@ -30,6 +30,9 @@ pip install -r requirements.txt
 
 7. Run server:
 python manage.py runserver
+
+8.localhost:
+http://127.0.0.1:8000/
 
 
 
